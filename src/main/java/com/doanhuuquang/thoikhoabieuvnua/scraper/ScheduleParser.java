@@ -133,7 +133,9 @@ public class ScheduleParser {
 					subject.setStart(safeParseInt(cols.get(1).text().trim()));
 					subject.setNumberOfLessons(safeParseInt(cols.get(2).text().trim()));
 					subject.setRoom(cols.get(3).text().trim());
-					subject.setLecturerName(cols.get(4).text().trim());
+					String lecturerName = cols.get(4).text().trim();
+					subject.setLecturerName(lecturerName != null && lecturerName != "" ? lecturerName : "Đang cập nhật");
+				
 				}
 			} else if (cols.size() >= 10) {
 				subject.setCode(cols.get(0).text().trim());
@@ -144,7 +146,8 @@ public class ScheduleParser {
 				subject.setStart(safeParseInt(cols.get(6).text().trim()));
 				subject.setNumberOfLessons(safeParseInt(cols.get(7).text().trim()));
 				subject.setRoom(cols.get(8).text().trim());
-				subject.setLecturerName(cols.get(9).text().trim());
+				String lecturerName = cols.get(9).text().trim();
+				subject.setLecturerName(lecturerName != null && lecturerName != "" ? lecturerName : "Đang cập nhật");
 			}
 
 			return subject;
