@@ -1,6 +1,7 @@
 package com.doanhuuquang.thoikhoabieuvnua.scraper;
 
 import com.doanhuuquang.thoikhoabieuvnua.model.User;
+import com.doanhuuquang.thoikhoabieuvnua.model.WeeklySchedule;
 import com.doanhuuquang.thoikhoabieuvnua.model.Schedule;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType.LaunchOptions;
@@ -13,7 +14,7 @@ import jakarta.annotation.PreDestroy;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -79,14 +80,15 @@ public class WebScraper {
 			waitForPageLoad(page);
 			return page;
 		} catch (Exception e) {
-			if (page != null) page.close();
+			if (page != null)
+				page.close();
 			throw new PlaywrightException("Không thể đăng nhập vào trang đào tạo");
 		}
 	}
 
 	public User verifyStudentLoginOnWeb(String studentCode, String password) {
 		Page page = null;
-		
+
 		try {
 			page = loginWeb(studentCode, password);
 			ElementHandle userNameElement = page.waitForSelector("xpath=" + USER_NAME_LOGGED,
@@ -108,7 +110,7 @@ public class WebScraper {
 			page = loginWeb(studentCode, password);
 
 			String fullSemesterText = convertSemesterCode(semesterCode);
-			
+
 			redirecToWeekSchedulePage(page);
 
 			page.locator("xpath=" + SEMESTER_COMBO_BOX_XPATH).click();
@@ -117,12 +119,15 @@ public class WebScraper {
 			Schedule schedule = new Schedule();
 
 			List<ElementHandle> semesterList = page.querySelectorAll(SEMESTER_DROP_DOWN_SELECTOR);
+			int semesterIndex = 0;
 			for (ElementHandle element : semesterList) {
 				if (fullSemesterText.equalsIgnoreCase(element.innerText().trim())) {
 					schedule.setSemesterString(element.innerText().trim());
 					element.click();
 					break;
 				}
+
+				semesterIndex++;
 			}
 
 			waitForPageLoad(page);
@@ -130,18 +135,23 @@ public class WebScraper {
 
 			schedule.setSemesterStartDate(date);
 
+			String html = fetchTableSchedule(page, semesterIndex);
+			ScheduleParser scheduleParser = new ScheduleParser();
+			Map<Integer, WeeklySchedule> weeklySchedules = scheduleParser.getSchedule(html);
+			schedule.setWeeklySchedules(weeklySchedules);
+
 			return schedule;
 		} finally {
 			if (page != null)
 				page.close();
 		}
 	}
-	
+
 	public void redirecToWeekSchedulePage(Page page) {
 		try {
 			page.waitForSelector("xpath=" + LINK_BUTTON_TKB_TUAN,
 					new Page.WaitForSelectorOptions().setTimeout(TIMEOUT).setState(WaitForSelectorState.VISIBLE));
-			
+
 			page.locator("xpath=" + LINK_BUTTON_TKB_TUAN).click();
 			waitForPageLoad(page);
 		} catch (Exception e) {
@@ -193,19 +203,20 @@ public class WebScraper {
 
 	public String fetchTableSchedule(Page page, int semesterIndex) {
 		try {
-			page.navigate(URL_DAO_TAO_VNUA_TKB_HK);
+			page.waitForSelector("xpath=" + LINK_BUTTON_TKB_HK,
+					new Page.WaitForSelectorOptions().setTimeout(TIMEOUT).setState(WaitForSelectorState.VISIBLE));
+			page.locator("xpath=" + LINK_BUTTON_TKB_HK).click();
 			waitForPageLoad(page);
 
 			page.locator("xpath=" + SEMESTER_TABLE_COMBO_BOX_XPATH).click();
 			waitForPageLoad(page);
+			page.waitForTimeout(2000);
 
 			List<ElementHandle> semesters = page.querySelectorAll(SEMESTER_DROP_DOWN_SELECTOR);
-			if (semesterIndex <= 0 || semesterIndex > semesters.size()) {
-				throw new IllegalArgumentException("Chỉ số học kỳ không hợp lệ: " + semesterIndex);
-			}
 
-			semesters.get(semesterIndex - 1).click();
+			semesters.get(semesterIndex).click();
 			waitForPageLoad(page);
+			page.waitForTimeout(5000);
 
 			return page.content();
 		} catch (Exception e) {
@@ -219,9 +230,9 @@ public class WebScraper {
 		}
 		;
 
-		String hocKy = semesterCode.substring(0, 1); // 1
-		String namBatDau = semesterCode.substring(1, 5); // 2023
-		String namKetThuc = semesterCode.substring(5, 9); // 2024
+		String hocKy = semesterCode.substring(0, 1);
+		String namBatDau = semesterCode.substring(1, 5);
+		String namKetThuc = semesterCode.substring(5, 9);
 
 		return "Học kỳ " + hocKy + " - Năm học " + namBatDau + " - " + namKetThuc;
 	}
