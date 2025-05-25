@@ -6,6 +6,8 @@ import com.doanhuuquang.thoikhoabieuvnua.model.User;
 import com.doanhuuquang.thoikhoabieuvnua.repository.UserRepository;
 import com.doanhuuquang.thoikhoabieuvnua.service.UserService;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,45 +20,24 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
-        try {
-        	User user = userService.login(userDTO.getStudentCode(), userDTO.getPassword());
-            
-            if (user != null) {
-            	return ResponseEntity.ok(user);
-            } else {
-            	return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Tài khoản hoặc mật khẩu không chính xác!");
-            }
-        } catch ( Exception e) {
-        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra, vui lòng thử lại sau bạn nhé!");
-        }
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserDTO userDTO) {
+        User user = userService.login(userDTO.getStudentCode(), userDTO.getPassword());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("user", user);
+        return ResponseEntity.ok(response);
     }
     
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDTO) {
-        try {
-        	User user = userRepository.findUserByStudentCode(userDTO.getStudentCode());
-        	
-        	if (user != null) {
-        		return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Tài khoản này đã được đăng ký trước đó rồi!");
-        	}
-        	
-        	user = userService.register(userDTO.getStudentCode(), userDTO.getPassword());
-            
-            if (user != null) {
-            	return ResponseEntity.ok(user);
-            } else {
-            	return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Thông tin tài khoản sinh viên không chính xác! Bạn có đang bị nhầm lẫn ở đâu đó không?");
-            }
-        } catch ( Exception e) {
-        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra, vui lòng thử lại sau bạn nhé!");
-        }
+    public ResponseEntity<Map<String, Object>> register(@RequestBody UserDTO userDTO) {
+        User user = userService.register(userDTO.getStudentCode(), userDTO.getPassword());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("user", user);
+        return ResponseEntity.ok(response);
     }
 }

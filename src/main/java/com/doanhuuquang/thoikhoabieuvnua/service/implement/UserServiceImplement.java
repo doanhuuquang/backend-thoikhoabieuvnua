@@ -16,32 +16,39 @@ public class UserServiceImplement implements UserService {
 	@Autowired
 	private WebScraper webScraper;
 	@Autowired
-    private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public User login(String studentCode, String password) {
-		// Kiểm tra trong database
+		if (studentCode == null || password == null) {
+			throw new IllegalArgumentException("Mã sinh viên và mật khẩu không được để trống");
+		}
+
 		User user = userRepository.findUserByStudentCode(studentCode);
 		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
 			return user;
+		} else {
+			throw new RuntimeException("Tài khoản hoặc mật khẩu không chính xác");
 		}
-
-		return null;
 	}
 
 	@Override
 	public User register(String studentCode, String password) {
-		// Kiểm tra thông tin đăng nhập từ trang đào tạo
-		User userLoginFromWeb = webScraper.verifyStudentLogin(studentCode, password);
-		
-		if (userLoginFromWeb != null) {
-			String hashedPassword = passwordEncoder.encode(password);
-			userLoginFromWeb.setPassword(hashedPassword);
-			
-			User userSaved = userRepository.save(userLoginFromWeb);
-			return userSaved;
+		if (studentCode == null || password == null) {
+			throw new IllegalArgumentException("Mã sinh viên hoặc mật khẩu không được null");
 		}
-		
-		return null;
+
+		User existingUser = userRepository.findUserByStudentCode(studentCode);
+		if (existingUser != null) {
+			throw new RuntimeException(
+					"Tài khoản này đã được đăng ký trước đó rồi, vui lòng chuyển sang đăng nhập nhé");
+		}
+
+		User userFromWeb = webScraper.verifyStudentLoginOnWeb(studentCode, password);
+
+		String hashedPassword = passwordEncoder.encode(password);
+		userFromWeb.setPassword(hashedPassword);
+		User userSaved = userRepository.save(userFromWeb);
+		return userSaved;
 	}
 }

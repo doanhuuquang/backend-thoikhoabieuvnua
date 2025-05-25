@@ -1,5 +1,8 @@
 package com.doanhuuquang.thoikhoabieuvnua.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +27,9 @@ public class ScheduleController {
 	public ResponseEntity<?> getSchedule(@PathVariable String semesterCode, @RequestBody UserDTO userDTO) {
 		Schedule schedule = scheduleService.getSchedule(userDTO.getStudentCode(), userDTO.getPassword(), semesterCode);
 		
-		if(schedule.getSemesterStartDate() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Có lỗi xảy ra khi tải thời khóa biểu. "
-                    		+ "Vui lòng kiểm tra lại thông tin tài khoản sinh viên. "
-                    		+ "Nếu bạn nghĩ là lỗi hệ thống xin vui lòng liên hệ với chúng tôi để được hỗ trợ!");
-		}
-		
-		return ResponseEntity.ok(schedule);
+		Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("schedule", schedule);
+        return ResponseEntity.ok(response);
 	}
 }

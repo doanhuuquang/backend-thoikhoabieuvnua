@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.doanhuuquang.thoikhoabieuvnua.model.Schedule;
+import com.doanhuuquang.thoikhoabieuvnua.model.User;
 import com.doanhuuquang.thoikhoabieuvnua.scraper.WebScraper;
 import com.doanhuuquang.thoikhoabieuvnua.service.ScheduleService;
 
@@ -12,9 +13,10 @@ import com.doanhuuquang.thoikhoabieuvnua.service.ScheduleService;
 public class ScheduleServiceImplement implements ScheduleService {
 	@Autowired
 	private WebScraper webScraper;
-	
+
 	@Override
 	public Schedule getSchedule(String studentCode, String password, String semesterCode) {
-		return webScraper.fetchScheduleOnWeb(studentCode, password, semesterCode);
+		Schedule schedule = webScraper.fetchScheduleOnWeb(studentCode, password, semesterCode);
+		return schedule;
 	}
 }
