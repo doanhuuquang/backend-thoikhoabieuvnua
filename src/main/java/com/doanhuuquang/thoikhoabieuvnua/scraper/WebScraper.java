@@ -136,7 +136,7 @@ public class WebScraper {
 			schedule.setSemesterStartDate(date);
 
 			String html = fetchTableSchedule(page, semesterIndex);
-			ScheduleParser scheduleParser = new ScheduleParser();
+			ScheduleParser scheduleParser = new ScheduleParser(schedule.getSemesterStartDate());
 			Map<Integer, WeeklySchedule> weeklySchedules = scheduleParser.getSchedule(html);
 			schedule.setWeeklySchedules(weeklySchedules);
 

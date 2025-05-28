@@ -1,6 +1,7 @@
 package com.doanhuuquang.thoikhoabieuvnua.scraper;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,11 @@ import com.doanhuuquang.thoikhoabieuvnua.model.WeeklySchedule;
 
 public class ScheduleParser {
 	private Document doc;
+	private LocalDate semesterStartDate;
+	
+	public ScheduleParser(LocalDate semesterStartDate) {
+		this.semesterStartDate = semesterStartDate;
+	}
 	
 	public Document parseHtmlToDocument(String html) {
         return Jsoup.parse(html);
@@ -38,11 +44,8 @@ public class ScheduleParser {
 			}
 
 			Subject subject = getSubject(table, rowIndex);
-			System.out.println("Subject at row " + rowIndex + ": " + subject);
-
 
 			String weekString = cols.get(cols.size() - 1).text();
-
 			
 			DayOfWeek day = getDayOfWeek(table, rowIndex);
 
@@ -65,8 +68,23 @@ public class ScheduleParser {
 						dailySchedule = new DailySchedule();
 						weeklySchedule.getDailySchedules().put(day, dailySchedule);
 					}
+					
+					LocalDate weekStart = semesterStartDate.plusWeeks(weekCount - 1);
+					LocalDate subjectDate = weekStart.with(day);
+					
+					Subject subjectCopy = new Subject(
+							subject.getCode(),
+							subject.getName(),
+							subject.getGroup(),
+							subject.getCredit(),
+							subject.getClassCode(),
+							subject.getStart(),
+							subject.getNumberOfLessons(),
+							subject.getRoom(), 
+							subject.getLecturerName(),
+							subjectDate);
 
-					dailySchedule.getSubjects().add(subject);
+					dailySchedule.getSubjects().add(subjectCopy);
 				}
 
 				weekCount++;

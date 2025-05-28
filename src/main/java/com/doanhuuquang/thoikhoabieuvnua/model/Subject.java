@@ -1,5 +1,7 @@
 package com.doanhuuquang.thoikhoabieuvnua.model;
 
+import java.time.LocalDate;
+
 public class Subject {
 	private String code;
 	private String name;
@@ -10,11 +12,12 @@ public class Subject {
 	private int numberOfLessons;
 	private String room;
 	private String lecturerName;
+	private LocalDate subjectDate;
 	
 	public Subject() {}
-
+	
 	public Subject(String code, String name, String group, int credit, String classCode, int start, int numberOfLessons,
-			String room, String lecturerName) {
+			String room, String lecturerName, LocalDate subjectDate) {
 		super();
 		this.code = code;
 		this.name = name;
@@ -25,6 +28,7 @@ public class Subject {
 		this.numberOfLessons = numberOfLessons;
 		this.room = room;
 		this.lecturerName = lecturerName;
+		this.subjectDate = subjectDate;
 	}
 
 	public String getCode() {
@@ -97,5 +101,13 @@ public class Subject {
 
 	public void setLecturerName(String lecturerName) {
 		this.lecturerName = lecturerName;
+	}
+	
+	public void setSubjectDate(LocalDate subjectDate) {
+		this.subjectDate = subjectDate;
+	}
+	
+	public LocalDate getSubjectDate() {
+		return subjectDate;
 	}
 }
