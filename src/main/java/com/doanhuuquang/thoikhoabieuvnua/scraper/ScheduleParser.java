@@ -2,34 +2,34 @@ package com.doanhuuquang.thoikhoabieuvnua.scraper;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.doanhuuquang.thoikhoabieuvnua.model.DailySchedule;
 import com.doanhuuquang.thoikhoabieuvnua.model.Subject;
-import com.doanhuuquang.thoikhoabieuvnua.model.WeeklySchedule;
 
 public class ScheduleParser {
 	private Document doc;
 	private LocalDate semesterStartDate;
-	
+
 	public ScheduleParser(LocalDate semesterStartDate) {
 		this.semesterStartDate = semesterStartDate;
 	}
-	
+
 	public Document parseHtmlToDocument(String html) {
-        return Jsoup.parse(html);
-    }
-	
-	public Map<Integer, WeeklySchedule> getSchedule(String html) {
-		Map<Integer, WeeklySchedule> weeklySchedules = new HashMap<>();
+		return Jsoup.parse(html);
+	}
+
+	public Map<LocalDate, List<Subject>> getSchedule(String html) {
+		Map<LocalDate, List<Subject>> schedules = new TreeMap<>();
 		doc = parseHtmlToDocument(html);
-		
+
 		Element table = doc.selectFirst("tbody");
 		Elements rows = table.select("tr");
 
@@ -46,7 +46,7 @@ public class ScheduleParser {
 			Subject subject = getSubject(table, rowIndex);
 
 			String weekString = cols.get(cols.size() - 1).text();
-			
+
 			DayOfWeek day = getDayOfWeek(table, rowIndex);
 
 			if (day == null || subject == null) {
@@ -57,41 +57,24 @@ public class ScheduleParser {
 			for (char c : weekString.toCharArray()) {
 				if (Character.isDigit(c)) {
 
-					WeeklySchedule weeklySchedule = weeklySchedules.get(weekCount);
-					if (weeklySchedule == null) {
-						weeklySchedule = new WeeklySchedule();
-						weeklySchedules.put(weekCount, weeklySchedule);
-					}
-
-					DailySchedule dailySchedule = weeklySchedule.getDailySchedules().get(day);
-					if (dailySchedule == null) {
-						dailySchedule = new DailySchedule();
-						weeklySchedule.getDailySchedules().put(day, dailySchedule);
-					}
-					
 					LocalDate weekStart = semesterStartDate.plusWeeks(weekCount - 1);
 					LocalDate subjectDate = weekStart.with(day);
 					
-					Subject subjectCopy = new Subject(
-							subject.getCode(),
-							subject.getName(),
-							subject.getGroup(),
-							subject.getCredit(),
-							subject.getClassCode(),
-							subject.getStart(),
-							subject.getNumberOfLessons(),
-							subject.getRoom(), 
-							subject.getLecturerName(),
-							subjectDate);
-
-					dailySchedule.getSubjects().add(subjectCopy);
+					List<Subject> subjects = schedules.get(subjectDate);
+					if (subjects == null) {
+						subjects = new ArrayList<>();
+						schedules.put(subjectDate, subjects);
+					}
+					subjects.add(subject);
 				}
 
 				weekCount++;
 			}
 		}
 		
-		return weeklySchedules;
+		
+
+		return schedules;
 	}
 
 	private DayOfWeek getDayOfWeek(Element table, int rowIndex) {
@@ -152,8 +135,9 @@ public class ScheduleParser {
 					subject.setNumberOfLessons(safeParseInt(cols.get(2).text().trim()));
 					subject.setRoom(cols.get(3).text().trim());
 					String lecturerName = cols.get(4).text().trim();
-					subject.setLecturerName(lecturerName != null && lecturerName != "" ? lecturerName : "Đang cập nhật");
-				
+					subject.setLecturerName(
+							lecturerName != null && lecturerName != "" ? lecturerName : "Đang cập nhật");
+
 				}
 			} else if (cols.size() >= 10) {
 				subject.setCode(cols.get(0).text().trim());
@@ -173,7 +157,7 @@ public class ScheduleParser {
 			return null;
 		}
 	}
-	
+
 	public DayOfWeek getDayOfWeekFromString(String string) {
 		switch (string.toUpperCase()) {
 		case "2":
@@ -194,12 +178,12 @@ public class ScheduleParser {
 			return null;
 		}
 	}
-	
+
 	private int safeParseInt(String value) {
-	    try {
-	        return Integer.parseInt(value);
-	    } catch (NumberFormatException e) {
-	        return 0;
-	    }
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 }

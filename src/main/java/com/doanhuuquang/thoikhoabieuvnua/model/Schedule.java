@@ -2,22 +2,16 @@ package com.doanhuuquang.thoikhoabieuvnua.model;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Schedule {
 	private String semesterString;
 	private LocalDate semesterStartDate;
-	private Map<Integer, WeeklySchedule> weeklySchedules;
+	private Map<LocalDate, List<Subject>> schedules;
 	
 	public Schedule() {
-		weeklySchedules = new HashMap<>();
-	}
-
-	public Schedule(String semesterString, LocalDate semesterStartDate, Map<Integer, WeeklySchedule> weeklySchedules) {
-		super();
-		this.semesterString = semesterString;
-		this.semesterStartDate = semesterStartDate;
-		this.weeklySchedules = weeklySchedules;
+		schedules = new HashMap<>();
 	}
 
 	public String getSemesterString() {
@@ -36,11 +30,11 @@ public class Schedule {
 		this.semesterStartDate = semesterStartDate;
 	}
 
-	public Map<Integer, WeeklySchedule> getWeeklySchedules() {
-		return weeklySchedules;
+	public Map<LocalDate, List<Subject>> getSchedules() {
+		return schedules;
 	}
 
-	public void setWeeklySchedules(Map<Integer, WeeklySchedule> weeklySchedules) {
-		this.weeklySchedules = weeklySchedules;
+	public void setSchedules(Map<LocalDate, List<Subject>> schedules) {
+		this.schedules = schedules;
 	}
 }

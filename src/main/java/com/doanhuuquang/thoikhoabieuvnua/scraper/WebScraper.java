@@ -1,8 +1,8 @@
 package com.doanhuuquang.thoikhoabieuvnua.scraper;
 
 import com.doanhuuquang.thoikhoabieuvnua.model.User;
-import com.doanhuuquang.thoikhoabieuvnua.model.WeeklySchedule;
 import com.doanhuuquang.thoikhoabieuvnua.model.Schedule;
+import com.doanhuuquang.thoikhoabieuvnua.model.Subject;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.BrowserType.LaunchOptions;
 import com.microsoft.playwright.options.LoadState;
@@ -137,8 +137,8 @@ public class WebScraper {
 
 			String html = fetchTableSchedule(page, semesterIndex);
 			ScheduleParser scheduleParser = new ScheduleParser(schedule.getSemesterStartDate());
-			Map<Integer, WeeklySchedule> weeklySchedules = scheduleParser.getSchedule(html);
-			schedule.setWeeklySchedules(weeklySchedules);
+			Map<LocalDate, List<Subject>> schedules = scheduleParser.getSchedule(html);
+			schedule.setSchedules(schedules);
 
 			return schedule;
 		} finally {
@@ -228,7 +228,6 @@ public class WebScraper {
 		if (semesterCode == null || semesterCode.length() != 9) {
 			return "";
 		}
-		;
 
 		String hocKy = semesterCode.substring(0, 1);
 		String namBatDau = semesterCode.substring(1, 5);
