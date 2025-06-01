@@ -65,14 +65,26 @@ public class ScheduleParser {
 						subjects = new ArrayList<>();
 						schedules.put(subjectDate, subjects);
 					}
-					subjects.add(subject);
+					
+					Subject subjectCopy = new Subject(
+							subject.getCode(),
+							subject.getName(),
+							subject.getGroup(),
+							subject.getCredit(),
+							subject.getClassCode(),
+							subject.getStart(),
+							subject.getNumberOfLessons(),
+							subject.getRoom(),
+							subject.getLecturerName(),
+							subjectDate
+					);
+					
+					subjects.add(subjectCopy);
 				}
 
 				weekCount++;
 			}
 		}
-		
-		
 
 		return schedules;
 	}
