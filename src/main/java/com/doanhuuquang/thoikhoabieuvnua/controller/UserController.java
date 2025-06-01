@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     
-    @PostMapping("/")
+    @GetMapping("/")
     public ResponseEntity<Map<String, Object>> test() {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "success");
