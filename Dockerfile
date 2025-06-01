@@ -10,4 +10,5 @@ FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar", "--server.port=${PORT}", "--server.address=0.0.0.0"]
+
