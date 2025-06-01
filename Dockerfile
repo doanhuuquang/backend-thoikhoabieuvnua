@@ -1,15 +1,13 @@
-#
 # Build stage
-#
-FROM eclipse-temurin:21-jdk AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean package
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /home/app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-#
-# Package stage
-#
+# Run stage
 FROM eclipse-temurin:21-jre AS runtime
-COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /usr/local/lib/demo.jar
+WORKDIR /app
+COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/usr/local/lib/demo.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
