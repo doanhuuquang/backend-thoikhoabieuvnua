@@ -38,7 +38,7 @@ public class WebScraper {
 	private static final String SEMESTER_DROP_DOWN_SELECTOR = ".ng-option";
 	private static final String SEMESTER_TABLE_COMBO_BOX_XPATH = "/html/body/app-root[1]/div/div/div/div[1]/div/div/div[1]/app-tkb-hocky/div/div[2]/div[1]/div/ng-select/div";
 
-	private static final boolean HEADLESS_MODE = false;
+	private static final boolean HEADLESS_MODE = true;
 	private static final int TIMEOUT = 5000;
 
 	private Playwright playwright;
