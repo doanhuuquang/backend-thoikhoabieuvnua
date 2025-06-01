@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 	libgtk-3-0t64\    
 	libpangocairo-1.0-0\   
 	libcairo-gobject2\     
-	libgdk-pixbuf-2.0-0  
+	libgdk-pixbuf-2.0-0  \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
