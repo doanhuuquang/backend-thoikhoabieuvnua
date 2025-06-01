@@ -44,6 +44,7 @@ public class WebScraper {
 
 	private Playwright playwright;
 	private Browser browser;
+	private BrowserContext context;
 
 	@PostConstruct
 	public void init() {
@@ -52,6 +53,9 @@ public class WebScraper {
 								.setHeadless(HEADLESS_MODE)
 								.setArgs(Arrays.asList("--no-sandbox", "--disable-setuid-sandbox"));
 		browser = playwright.chromium().launch(options);
+		context = browser.newContext(new Browser.NewContextOptions()
+										.setUserAgent(
+										"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"));
 	}
 
 	@PreDestroy
@@ -68,7 +72,7 @@ public class WebScraper {
 		Page page = null;
 
 		try {
-			page = browser.newPage();
+			page = context.newPage();
 			page.navigate(URL_DAO_TAO_VNUA);
 			waitForPageLoad(page);
 
