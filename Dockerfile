@@ -9,32 +9,15 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
+# Install Node.js and npm (cần để chạy Playwright CLI)
 RUN apt-get update && apt-get install -y \
-    libglib2.0-0 \
-    libnss3 \
-    libnspr4 \
-    libdbus-1-3 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libxcb1 \
-    libxkbcommon0 \
-    libatspi2.0-0 \
-    libx11-6 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libasound2t64 \
-	libgtk-3-0t64\    
-	libpangocairo-1.0-0\   
-	libcairo-gobject2\     
-	libgdk-pixbuf-2.0-0  \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Cài đặt Playwright và dependencies
+RUN npm install -g playwright@latest \
+    && playwright install-deps
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 
