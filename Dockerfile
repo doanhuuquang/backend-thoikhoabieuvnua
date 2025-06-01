@@ -25,7 +25,12 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxext6 \
     libxfixes3 \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    libxrandr2 \
+    libgbm1 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2t64 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 
