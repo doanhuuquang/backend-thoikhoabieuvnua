@@ -5,19 +5,12 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:21-jre AS runtime
+# Runtime stage sử dụng Playwright image
+FROM mcr.microsoft.com/playwright/java:v1.40.0-jammy AS runtime
 WORKDIR /app
 
-# Install Node.js and npm (cần để chạy Playwright CLI)
-RUN apt-get update && apt-get install -y \
-    curl \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
-
-# Cài đặt Playwright và dependencies
-RUN npm install -g playwright@latest \
-    && playwright install-deps
+# Install Java 21
+RUN apt-get update && apt-get install -y openjdk-21-jre
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 
