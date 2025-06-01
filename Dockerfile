@@ -5,12 +5,12 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Runtime stage sử dụng Playwright image
-FROM mcr.microsoft.com/playwright/java:v1.40.0-jammy AS runtime
+# Runtime stage - Sử dụng Playwright image v1.52.0
+FROM mcr.microsoft.com/playwright/java:v1.52.0-jammy AS runtime
 WORKDIR /app
 
-# Install Java 21
-RUN apt-get update && apt-get install -y openjdk-21-jre
+# Install Java 21 nếu cần
+RUN apt-get update && apt-get install -y openjdk-21-jre-headless
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 
