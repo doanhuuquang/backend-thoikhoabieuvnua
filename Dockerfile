@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y nodejs
 
 # Cài đặt Playwright và dependencies
-RUN npm install -g playwright@latest
+RUN npm install -g playwright@latest \
     && playwright install-deps
 
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
