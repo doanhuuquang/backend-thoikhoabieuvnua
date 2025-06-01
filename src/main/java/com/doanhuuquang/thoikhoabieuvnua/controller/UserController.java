@@ -21,6 +21,14 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @PostMapping("/")
+    public ResponseEntity<Map<String, Object>> test() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("Message", "Xin chào");
+        return ResponseEntity.ok(response);
+    }
+    
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserDTO userDTO) {
         User user = userService.login(userDTO.getStudentCode(), userDTO.getPassword());
