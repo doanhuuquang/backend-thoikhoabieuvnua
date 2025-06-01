@@ -1,10 +1,15 @@
-FROM maven:3-eclipse-temurin-21 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+#
+# Build stage
+#
+FROM maven:3.9.9-jdk-21-slim AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
 
-FROM eclipse-temurin:21-jdk
-WORKDIR /app
-COPY --from=build /app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar app.jar
+#
+# Package stage
+#
+FROM openjdk:21-jre-slim
+COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /usr/local/lib/demo.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/usr/local/lib/demo.jar"]
