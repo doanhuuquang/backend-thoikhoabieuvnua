@@ -1,3 +1,6 @@
+ENV MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+ENV MONGODB_DATABASE=thoikhoabieuvnua
+
 # Build stage
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /home/app
