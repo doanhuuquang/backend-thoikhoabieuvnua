@@ -13,6 +13,7 @@ import jakarta.annotation.PreDestroy;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,9 @@ public class WebScraper {
 	@PostConstruct
 	public void init() {
 		playwright = Playwright.create();
-		LaunchOptions options = new LaunchOptions().setHeadless(HEADLESS_MODE);
+		LaunchOptions options = new LaunchOptions()
+								.setHeadless(HEADLESS_MODE)
+								.setArgs(Arrays.asList("--no-sandbox", "--disable-setuid-sandbox"));
 		browser = playwright.chromium().launch(options);
 	}
 

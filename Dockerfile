@@ -9,9 +9,6 @@ RUN mvn clean package -DskipTests
 FROM mcr.microsoft.com/playwright/java:v1.52.0-jammy AS runtime
 WORKDIR /app
 
-# Install Java 21 nếu cần
-RUN apt-get update && apt-get install -y openjdk-21-jre-headless
-
 COPY --from=build /home/app/target/ThoiKhoaBieuVnua-0.0.1-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 8080
